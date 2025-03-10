@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
+    
+
+ <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Click The World - Gioco Platform Retro</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#111">
+    <title>Click The World - Riili Game</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#111"/>
+
+
     <style>
-        /* Tutti gli stili CSS rimangono invariati */
         * {
             margin: 0;
             padding: 0;
@@ -36,35 +39,343 @@
             overflow: hidden;
         }
 
-        /* ... (inserisci qui tutti gli altri stili CSS) ... */
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: black;
+            overflow: hidden;
+        }
 
-        #installButton {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #0ff;
-            color: #111;
+        .star {
+            position: absolute;
+            background-color: white;
+            width: 2px;
+            height: 2px;
+            border-radius: 50%;
+        }
+
+        .world {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            cursor: pointer;
+            transition: transform 0.1s;
+            z-index: 10;
+        }
+
+        .world:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+
+        .world:active {
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+
+        .hud {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 20;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-bottom: 2px solid #444;
+        }
+
+        .energy, .timer, .score {
+            font-size: 18px;
+            color: #0f0;
+            text-shadow: 0 0 5px #0f0;
+        }
+
+        .timer {
+            position: absolute;
+            top: 60px;
+            left: 15px;
+            color: #ff0;
+            text-shadow: 0 0 5px #ff0;
+            z-index: 25;
+            font-size: 18px;
+        }
+
+        .score {
+            color: #0ff;
+            text-shadow: 0 0 5px #0ff;
+        }
+
+        .game-over, .level-complete {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 30;
+            display: none;
+        }
+
+        h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .game-over h2 {
+            color: #f00;
+            text-shadow: 0 0 10px #f00;
+            animation: pulse 2s infinite;
+        }
+
+        .level-complete h2 {
+            color: #0f0;
+            text-shadow: 0 0 10px #0f0;
+            animation: pulse 2s infinite;
+        }
+
+        .final-score {
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: #0ff;
+            text-shadow: 0 0 5px #0ff;
+        }
+
+        button {
+            background-color: #333;
+            color: white;
             border: none;
             padding: 10px 20px;
-            font-size: 16px;
+            font-size: 18px;
             cursor: pointer;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
             transition: all 0.2s;
-            display: none;
+            margin: 10px;
         }
 
-        #installButton:hover {
-            background-color: #0dd;
+        button:hover {
+            background-color: #555;
             transform: scale(1.05);
         }
 
-        #installButton:active {
+        button:active {
             transform: scale(0.95);
+        }
+
+        .power-up {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 0, 0.8);
+            border-radius: 50%;
+            cursor: pointer;
+            animation: pulse 1s infinite;
+            z-index: 5;
+        }
+
+        .power-up.time {
+            background-color: rgba(0, 255, 255, 0.8);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .click-effect {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid #0f0;
+            animation: expand 0.5s forwards;
+            pointer-events: none;
+        }
+
+        @keyframes expand {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        .start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 40;
+            padding: 40px 0;
+        }
+
+        .title {
+            font-size: 48px;
+            color: #0ff;
+            text-shadow: 0 0 15px #0ff;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 20px 40px;
+            border-radius: 15px;
+            border: 3px solid #0ff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            background-color: rgba(0, 255, 255, 0.1);
+            font-weight: 700;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .title::after {
+            content: "CLICK TO START";
+            display: block;
+            font-size: 16px;
+            margin-top: 10px;
+            color: white;
+            opacity: 0.8;
+            font-weight: normal;
+        }
+
+        .title:hover {
+            transform: scale(1.05);
+            background-color: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.7);
+        }
+
+        .title:active {
+            transform: scale(0.98);
+        }
+
+        .top-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .middle-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+        }
+
+        .bottom-section {
+            margin-top: auto;
+        }
+
+        .instructions {
+            font-size: 16px;
+            color: white;
+            text-align: center;
+            line-height: 1.5;
+            max-width: 600px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .level-indicator {
+            position: absolute;
+            top: 90px;
+            left: 15px;
+            color: #ff0;
+            font-size: 18px;
+            text-shadow: 0 0 5px #ff0;
+            z-index: 25;
+        }
+
+        .credits-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .creator-credits {
+            font-size: 20px;
+            color: #ff69b4;
+            text-shadow: 0 0 10px #ff69b4;
+            opacity: 1;
+            transition: opacity 1s ease-in-out;
+            animation: glow 2s infinite alternate;
+            margin-bottom: 5px;
+        }
+
+        .school-credits {
+            font-size: 16px;
+            color: #ff69b4;
+            text-shadow: 0 0 10px #ff69b4;
+            opacity: 1;
+            transition: opacity 1s ease-in-out;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px #ff69b4;
+            }
+            to {
+                text-shadow: 0 0 20px #ff69b4, 0 0 30px #ff1493;
+            }
+        }
+
+        .pnrr-credits {
+            font-size: 12px;
+            color: #fff;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            line-height: 1.4;
+            text-align: center;
+            border-radius: 5px;
+            max-width: 600px;
+        }
+
+        .game-credits {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 10px;
+            color: #fff;
+            padding: 5px;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 15;
+            line-height: 1.4;
         }
     </style>
 </head>
 <body>
+
+
+
+
     <div class="game-container">
         <div class="stars" id="starsContainer"></div>
         <div class="hud">
@@ -121,49 +432,27 @@
         </div>
     </div>
 
-    <!-- Pulsante di installazione -->
-    <button id="installButton">Installa App</button>
-
     <script>
+   
+  
         // Registra il Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('service-worker.js')
-                    .then((registration) => {
-                        console.log('ServiceWorker registrato con successo: ', registration.scope);
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
                     })
-                    .catch((error) => {
-                        console.log('Registrazione ServiceWorker fallita: ', error);
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
                     });
             });
         }
 
-        // Gestione del pulsante di installazione
-        let deferredPrompt;
-        const installButton = document.getElementById('installButton');
+        // Il tuo JavaScript esistente
+   
 
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installButton.style.display = 'block';
-        });
 
-        installButton.addEventListener('click', () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('Utente ha accettato l\'installazione');
-                    } else {
-                        console.log('Utente ha rifiutato l\'installazione');
-                    }
-                    deferredPrompt = null;
-                    installButton.style.display = 'none';
-                });
-            }
-        });
-
-        // Elementi del DOM
+     // Elementi del DOM
         const world = document.getElementById('world');
         const energyCount = document.getElementById('energyCount');
         const timeLeft = document.getElementById('timeLeft');
@@ -182,7 +471,7 @@
         const creatorCredits = document.getElementById('creatorCredits');
         const schoolCredits = document.getElementById('schoolCredits');
 
-        // Crediti che scompaiono dopo 5 secondi
+        // Crediti che scompaiono dopo 5 secondi nella schermata iniziale
         setTimeout(() => {
             creatorCredits.style.opacity = '0';
             schoolCredits.style.opacity = '0';
@@ -199,17 +488,31 @@
         let worldMoveInterval;
         let isGameRunning = false;
         let clickPower = 2;
-        let worldMoveSpeed = 2000;
+        let worldMoveSpeed = 2000; // Velocità di movimento iniziale della Terra (ms)
         let backgrounds = [
             { stars: "#000080", world: "https://i.postimg.cc/X7KQfgZp/Terra.png" },
             { stars: "#800080", world: "https://i.postimg.cc/X7KQfgZp/Terra.png" },
             { stars: "#008080", world: "https://i.postimg.cc/X7KQfgZp/Terra.png" }
         ];
 
-        // Funzione per creare stelle
+        // Effetti sonori
+        const clickSound = new Audio();
+        clickSound.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==";
+        
+        const powerUpSound = new Audio();
+        powerUpSound.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==";
+        
+        const gameOverSound = new Audio();
+        gameOverSound.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==";
+        
+        const levelCompleteSound = new Audio();
+        levelCompleteSound.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==";
+
+        // Funzione per creare stelle sullo sfondo
         function createStars() {
             starsContainer.innerHTML = '';
             const starsCount = 100;
+            
             for (let i = 0; i < starsCount; i++) {
                 const star = document.createElement('div');
                 star.classList.add('star');
@@ -225,22 +528,37 @@
         // Funzione per muovere la Terra
         function moveWorld() {
             if (!isGameRunning) return;
-            worldMoveSpeed = Math.max(200, 2000 - ((level - 1) * 400));
+            
+            // Aggiorna la velocità in base al livello - aumentata la velocità di movimento
+            worldMoveSpeed = Math.max(200, 2000 - ((level - 1) * 400)); // Diminuisce di 400ms ogni livello (era 300ms), min 200ms (era 300ms)
+            
+            // Al livello 1, la Terra solo fluttua (non serve fare nulla)
             if (level === 1) {
                 world.style.animation = "float 3s infinite ease-in-out";
                 return;
             }
+            
+            // Dal livello 2 in poi, muove la Terra in posizioni casuali
             clearInterval(worldMoveInterval);
+            
+            // Rimuove l'animazione di fluttuazione
             world.style.animation = "none";
+            
             worldMoveInterval = setInterval(() => {
                 if (!isGameRunning) return;
+                
+                // Calcola nuova posizione casuale all'interno dei confini
                 const maxX = gameContainer.clientWidth - 150;
                 const maxY = gameContainer.clientHeight - 150;
                 const randomX = 75 + Math.floor(Math.random() * (maxX - 150));
                 const randomY = 75 + Math.floor(Math.random() * (maxY - 150));
+                
+                // Transizione fluida alla nuova posizione
                 world.style.transition = `top ${worldMoveSpeed/2000}s ease, left ${worldMoveSpeed/2000}s ease`;
                 world.style.top = `${randomY}px`;
                 world.style.left = `${randomX}px`;
+                
+                // Rimuove translate(-50%, -50%) che interferisce con il posizionamento
                 world.style.transform = "scale(1)";
             }, worldMoveSpeed);
         }
@@ -249,31 +567,47 @@
         function initGame() {
             energy = 0;
             timer = 60;
+            // Il punteggio di livello viene resettato, ma il punteggio totale no
             score = 0;
             clickPower = 2;
+            
             energyCount.textContent = energy;
             timeLeft.textContent = timer;
-            scoreCount.textContent = totalScore;
+            scoreCount.textContent = totalScore; // Mostra il punteggio totale accumulato
+            
             gameOver.style.display = 'none';
             levelComplete.style.display = 'none';
+            
+            // Applica lo sfondo del livello corrente
             const currentBackground = backgrounds[(level - 1) % backgrounds.length];
             starsContainer.style.backgroundColor = currentBackground.stars;
             world.src = currentBackground.world;
+            
             createStars();
+            
+            // Rimuovi eventuali power-up esistenti
             document.querySelectorAll('.power-up').forEach(powerUp => powerUp.remove());
+            
             isGameRunning = true;
+            
+            // Avvia il timer di gioco
             gameInterval = setInterval(updateGame, 1000);
+            
+            // Avvia l'intervallo per la generazione di power-up
             powerUpInterval = setInterval(spawnPowerUp, 5000);
+            
+            // Inizia il movimento della Terra in base al livello
             moveWorld();
         }
 
-        // Aggiornamento del gioco
+        // Aggiornamento del gioco (ogni secondo)
         function updateGame() {
             if (isGameRunning) {
                 timer--;
                 timeLeft.textContent = timer;
+                
                 if (timer <= 0) {
-                    endGame(false);
+                    endGame(false); // Game over quando il tempo scade
                 }
             }
         }
@@ -284,44 +618,68 @@
             clearInterval(gameInterval);
             clearInterval(powerUpInterval);
             clearInterval(worldMoveInterval);
+            
+            // Rimuovi eventuali power-up esistenti
             document.querySelectorAll('.power-up').forEach(powerUp => powerUp.remove());
+            
             if (isWin) {
+                // Calcola il punteggio del livello
                 score = energy + timer;
+                // Aggiorna il punteggio totale
                 totalScore += score;
+                
                 levelScore.textContent = score;
-                scoreCount.textContent = totalScore;
+                scoreCount.textContent = totalScore; // Aggiorna display del punteggio totale
+                
                 levelComplete.style.display = 'flex';
+                levelCompleteSound.play();
             } else {
-                finalScore.textContent = totalScore;
+                finalScore.textContent = totalScore; // Mostra il punteggio totale
                 gameOver.style.display = 'flex';
+                gameOverSound.play();
             }
         }
 
         // Generazione di power-up
         function spawnPowerUp() {
             if (!isGameRunning) return;
+            
             const powerUp = document.createElement('div');
             powerUp.classList.add('power-up');
+            
+            // 30% di probabilità di ottenere un power-up di tempo
             const isTimePowerUp = Math.random() < 0.3;
             if (isTimePowerUp) {
                 powerUp.classList.add('time');
             }
+            
+            // Posiziona casualmente all'interno del contenitore di gioco
             const maxX = gameContainer.clientWidth - 40;
             const maxY = gameContainer.clientHeight - 40;
             const randomX = Math.floor(Math.random() * maxX);
             const randomY = Math.floor(Math.random() * maxY);
+            
             powerUp.style.left = `${randomX}px`;
             powerUp.style.top = `${randomY}px`;
+            
+            // Aggiungi evento di click
             powerUp.addEventListener('click', function() {
                 if (isTimePowerUp) {
                     timer += 10;
                     timeLeft.textContent = timer;
+                    createFloatingText(`+10s`, randomX, randomY, '#0ff');
                 } else {
                     clickPower += 1;
+                    createFloatingText(`+1 Click Power`, randomX, randomY, '#ff0');
                 }
+                
+                powerUpSound.play();
                 this.remove();
             });
+            
             gameContainer.appendChild(powerUp);
+            
+            // Rimuovi il power-up dopo 3 secondi se non viene raccolto
             setTimeout(() => {
                 if (powerUp && powerUp.parentNode === gameContainer) {
                     powerUp.remove();
@@ -329,19 +687,81 @@
             }, 3000);
         }
 
+        // Crea effetto visivo di testo fluttuante
+        function createFloatingText(text, x, y, color) {
+            const floatingText = document.createElement('div');
+            floatingText.style.position = 'absolute';
+            floatingText.style.left = `${x}px`;
+            floatingText.style.top = `${y}px`;
+            floatingText.style.color = color;
+            floatingText.style.fontWeight = 'bold';
+            floatingText.style.fontSize = '20px';
+            floatingText.style.pointerEvents = 'none';
+            floatingText.style.textShadow = `0 0 5px ${color}`;
+            floatingText.style.zIndex = '100';
+            floatingText.textContent = text;
+            
+            gameContainer.appendChild(floatingText);
+            
+            // Animazione del testo
+            let opacity = 1;
+            let yPos = y;
+            
+            const animate = setInterval(() => {
+                opacity -= 0.05;
+                yPos -= 2;
+                
+                floatingText.style.opacity = opacity;
+                floatingText.style.top = `${yPos}px`;
+                
+                if (opacity <= 0) {
+                    clearInterval(animate);
+                    floatingText.remove();
+                }
+            }, 30);
+        }
+
+        // Crea effetto visivo per il click
+        function createClickEffect(x, y) {
+            const effect = document.createElement('div');
+            effect.classList.add('click-effect');
+            effect.style.left = `${x - 25}px`;
+            effect.style.top = `${y - 25}px`;
+            
+            gameContainer.appendChild(effect);
+            
+            setTimeout(() => {
+                effect.remove();
+            }, 500);
+        }
+
         // Event Listeners
         world.addEventListener('click', function(e) {
             if (!isGameRunning) return;
+            
             energy += clickPower;
             energyCount.textContent = energy;
+            
+            // Crea effetto di click
+            createClickEffect(e.clientX - gameContainer.getBoundingClientRect().left, e.clientY - gameContainer.getBoundingClientRect().top);
+            
+            // Crea testo fluttuante per i punti
+            createFloatingText(`+${clickPower}`, e.clientX - gameContainer.getBoundingClientRect().left, e.clientY - gameContainer.getBoundingClientRect().top, '#0f0');
+            
+            // Riproduci suono di click
+            clickSound.currentTime = 0;
+            clickSound.play();
+            
+            // Controlla se l'obiettivo è stato raggiunto
             if (energy >= 50) {
                 endGame(true);
             }
         });
 
         restartButton.addEventListener('click', function() {
+            // Reset completo del gioco
             level = 1;
-            totalScore = 0;
+            totalScore = 0; // Reset del punteggio totale
             levelCount.textContent = level;
             initGame();
         });
@@ -352,7 +772,7 @@
             initGame();
         });
 
-        // Click to Start
+        // Usa il titolo come pulsante di start
         titleStart.addEventListener('click', function() {
             startScreen.style.display = 'none';
             initGame();
@@ -361,5 +781,7 @@
         // Inizializza le stelle al caricamento della pagina
         createStars();
     </script>
+
+
 </body>
 </html>
